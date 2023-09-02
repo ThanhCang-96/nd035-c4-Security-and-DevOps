@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.regex.Pattern;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -26,7 +28,7 @@ public class UserController {
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private Logger log = LoggerFactory.getLogger(UserController.class);
-
+	Pattern pattern = Pattern.compile("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$");
 	@GetMapping("/id/{id}")
 	public ResponseEntity<User> findById(@PathVariable Long id) {
 		return ResponseEntity.of(userRepository.findById(id));
@@ -46,9 +48,11 @@ public class UserController {
 		Cart cart = new Cart();
 		cartRepository.save(cart);
 		user.setCart(cart);
+		boolean isValidPassword = pattern.matcher(createUserRequest.getPassword()).matches();
 
 		if(createUserRequest.getPassword().length() < 7 ||
-				!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())){
+				!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword()) ||
+				!isValidPassword){
 			log.error("Error with user password. Cannot create user {}",createUserRequest.getUsername());
 			return ResponseEntity.badRequest().build();
 		}

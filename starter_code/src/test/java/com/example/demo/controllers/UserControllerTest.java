@@ -38,12 +38,12 @@ public class UserControllerTest {
     }
     @Test
     public void testCreateUser() throws Exception {
-        when(bCryptPasswordEncoder.encode("12345678")).thenReturn("encodedPassword");
+        when(bCryptPasswordEncoder.encode("Test123456")).thenReturn("encodedPassword");
 
         CreateUserRequest request = new CreateUserRequest();
         request.setUsername("cangnt2");
-        request.setPassword("12345678");
-        request.setConfirmPassword("12345678");
+        request.setPassword("Test123456");
+        request.setConfirmPassword("Test123456");
         ResponseEntity<User> response = userController.createUser(request);
 
         assertEquals(200,response.getStatusCodeValue());
